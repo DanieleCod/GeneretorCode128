@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Generatore Codice a Barre EAN-128 e Programmazione UCI Lissone</title>
     <style>
+        
         body {
             font-family: sans-serif;
             display: flex;
@@ -14,19 +15,20 @@
             justify-content: flex-start;
             height: 100vh;
             margin: 0;
-            background-color: blue;
+            background-color: rgb(0, 0, 128);
             color: white;
         }
 
         #header {
-            background-color: yellow;
+
+            /*background-color: yellow;
             color: blue;
-            padding: 10px 20px;
-            border-radius: 30px;
+            padding: 15px 20px;
+            border-radius: 25px / 50px; /* raggio orizzontale / raggio verticale */
             font-size: 2em;
             font-weight: bold;
             margin-bottom: 20px;
-        }
+        }   
 
         #input-container {
             margin-bottom: 20px;
@@ -61,11 +63,13 @@
 
 <body>
     <div id="header">
-        UCI
+        <a class="uci-logo" href="https://www.ucicinemas.it/"><img src="https://www.ucicinemas.it/static/website/images/logo-2020.png" alt="UCI CINEMAS"  title="UCI CINEMAS"/></a>
     </div>
 
+    
+
     <div id="input-container">
-        <label for="data-input">Inserisci i dati EAN-128:</label><br>
+        <label for="data-input">Inserisci Codie promozionale:</label><br>
         <input type="text" id="data-input" placeholder="Es. (01)95012345678908(17)241231">
         <button onclick="generateBarcode()">Genera Codice a Barre</button>
         <button onclick="resetBarcode()">Reset</button>
@@ -124,6 +128,10 @@
         }
 
         window.onload = getFilmInProgrammazione;
+
+        
+
+
     </script>
 </body>
 
