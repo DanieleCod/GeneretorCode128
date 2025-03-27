@@ -4,98 +4,106 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
     <title>Generatore Codice a Barre EAN-128 e Programmazione UCI Lissone</title>
     <style>
+        /* Stili generali */
         body {
             font-family: sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: space-around;
-            height: 100vh;
+            justify-content: flex-start;
+            padding-top: 0;
             margin: 0;
             background-color: #011931;
             color: white;
         }
 
-        .uci-logo {
+        #header {
             display: flex;
-            flex-direction: column;
-            flex-wrap: nowrap;
             align-items: center;
-            justify-content: space-around;
-            width: 300em;
-            height: 22rem;
-            padding-top: 0; 
-            background-color: rgb(0, 0, 128);
-            color: white;
+            justify-content: center;
+            text-align: center;
+            margin-bottom: 20px;
+            border: 1px solid rgb(244, 240, 31);
+            width: 100%; /* Larghezza al 100% per adattarsi allo schermo */
         }
 
-        #header {
-            font-size: 2em;
-            font-weight: bold;
-            margin-bottom: 20px;
+        .uci-logo {
+            width: 1000%; /* Larghezza relativa */
+             /* Larghezza massima per evitare che diventi troppo grande */
+            height: auto; /* Altezza automatica per mantenere le proporzioni */
+            background-color: rgb(0, 0, 128);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .uci-logo img {
+            max-width: 100%; /* L'immagine si adatta alla larghezza del logo */
+            height: auto;
         }
 
         #input-container {
-            margin-bottom: 20px;
+            margin-bottom: 10px;
+            width: 90%; /* Larghezza relativa */
         }
 
         #barcode-container {
-            margin-top: 20px;
+            margin-top: 10px;
             cursor: pointer;
+            width: 100%; /* Larghezza al 100% per adattarsi allo schermo */
+            display: flex;
+            justify-content: center;
         }
 
         #barcode {
-            /* Lo stile del codice a barre sarà gestito dalla libreria */
-            width: 100%;
+            width: 90%; /* Larghezza relativa */
             height: auto;
         }
 
         #programmazione-container {
-            margin-top: 20px;
-            border: 1px solid white;
+            margin-top: 10px;
+            border: 1px solid rgb(244, 240, 31);
             padding: 10px;
-            width: 80%;
+            width: 90%; /* Larghezza relativa */
         }
 
         #programmazione-container h2 {
             text-align: center;
+            color: white;
+            border: 1px solid rgb(244, 240, 31);
         }
 
-        .programmazione-film {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-        }
-
-        /* Stili per la lista dei film */
         .movie-list-container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            padding: 20px;
         }
 
         .movie-card {
-            width: 200px;
-            margin: 10px;
-            border: 1px solid #ccc;
+            border: 1px solid #ddd;
             box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
             text-align: center;
             border-radius: 5px;
-            overflow: hidden; /* Nasconde l'overflow del contenuto */
+            overflow: hidden;
+            background-color: #f8f8f8;
+            color: #333;
         }
 
         .movie-card img {
             width: 100%;
             height: auto;
+            border-bottom: 1px solid #ddd;
         }
 
         .movie-card h3 {
             font-size: 1em;
             padding: 10px;
             margin: 0;
+            font-weight: bold;
         }
 
         .movie-card p {
@@ -115,7 +123,6 @@
             border-radius: 5px;
         }
 
-        /* Modale */
         .modal {
             display: none;
             position: fixed;
@@ -147,6 +154,17 @@
             font-size: 35px;
             font-weight: bold;
             cursor: pointer;
+        }
+
+        /* Media queries per schermi piccoli */
+        @media (max-width: 600px) {
+            .uci-logo {
+                width: 100%; /* Aumenta la larghezza su schermi piccoli */
+            }
+
+            .movie-list-container {
+                grid-template-columns: 1fr; /* Una colonna su schermi piccoli */
+            }
         }
     </style>
 
@@ -189,13 +207,14 @@
         const TMDB_API_KEY = "8d598d7a5b6cc81fef53d86b5e2cc247"; // Inserisci qui la tua chiave API TMDB
 
         function generateBarcode() {
+            
             const dataInput = document.getElementById("data-input").value;
             const barcodeElement = document.getElementById("barcode");
             const barcodeContainer = document.getElementById("barcode-container");
             const barcodeModal = document.getElementById("barcode-modal");
             const barcodeModalImage = document.getElementById("barcode-modal-image");
 
-        
+           
 
             JsBarcode(barcodeElement, dataInput, {
                 format: "CODE128",
@@ -269,31 +288,31 @@
 
         // Funzione per recuperare i film usciti nelle ultime due settimane da TMDB
         function getRecentMovies() {
-    const today = new Date();
-    const twoWeeksAgo = new Date(today);
-    twoWeeksAgo.setDate(today.getDate() - 30);
+            const today = new Date();
+            const twoWeeksAgo = new Date(today);
+            twoWeeksAgo.setDate(today.getDate() - 30);
 
-    const todayFormatted = today.toISOString().split('T')[0];
-    const twoWeeksAgoFormatted = twoWeeksAgo.toISOString().split('T')[0];
+            const todayFormatted = today.toISOString().split('T')[0];
+            const twoWeeksAgoFormatted = twoWeeksAgo.toISOString().split('T')[0];
 
-    // Modifica qui: Aggiungi &region=IT all'URL
-    const url = `https://api.themoviedb.org/3/discover/movie?api_key=${TMDB_API_KEY}&language=it-IT&sort_by=popularity.desc&include_adult=false&include_video=false&page=1&release_date.gte=${twoWeeksAgoFormatted}&release_date.lte=${todayFormatted}&region=IT`;
+            // Modifica qui: Usa l'endpoint /search/movie e aggiungi with_type=movie
+            const url = `https://api.themoviedb.org/3/discover/movie?api_key=${TMDB_API_KEY}&language=it-IT&sort_by=popularity.desc&include_adult=false&include_video=false&page=1&release_date.gte=${twoWeeksAgoFormatted}&release_date.lte=${todayFormatted}&region=IT`;
 
-    fetch(url)
-        .then(response => response.json())
-        .then(data => {
-            movieListContainer.innerHTML = ""; // Pulisci il contenitore
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    movieListContainer.innerHTML = "";
 
-            data.results.forEach(movie => {
-                // Verifica se il film ha una data di rilascio
-                if (movie.release_date) {
-                    const movieCard = createMovieCard(movie);
-                    movieListContainer.appendChild(movieCard);
-                }
-            });
-        })
-        .catch(error => console.error("Errore nel recupero dei film:", error));
-}
+                    data.results.forEach(movie => {
+                        // Verifica se il film ha una data di rilascio
+                        if (movie.release_date && movie.popularity > 10) { 
+                            const movieCard = createMovieCard(movie);
+                            movieListContainer.appendChild(movieCard);
+                        }
+                    });
+                })
+                .catch(error => console.error("Errore nel recupero dei film:", error));
+        }
 
         // Chiama la funzione per ottenere i film quando la pagina si carica
         window.onload = function() {
