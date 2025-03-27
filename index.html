@@ -6,80 +6,113 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Generatore Codice a Barre EAN-128 e Programmazione UCI Lissone</title>
     <style>
+        /* Stili generali */
         body {
             font-family: sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: flex-start;
+            /*justify-content: flex-start;*/
+            padding-top: 0; 
             height: 100vh;
             margin: 0;
+            background-color: #011931; /* Sfondo blu scuro */
+            color: white;
+        }
+
+        .uci-logo {
+            font-family: sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            width: 300vh;
+            height: 22vh;
+            padding-top: 0; 
             background-color: rgb(0, 0, 128);
             color: white;
         }
 
         #header {
-            font-size: 2em;
-            font-weight: bold;
+            /* Stili per l'header con il logo */
+            display: flex; /* Aggiungi flexbox */
+            align-items: center; /* Centra verticalmente */
+            justify-content: center; /* Centra orizzontalmente (opzionale) */
+            text-align: center;
             margin-bottom: 20px;
+            border: 1px solid rgb(244, 240, 31);
         }
 
         #input-container {
-            margin-bottom: 20px;
+            margin-bottom: 10px;
         }
 
         #barcode-container {
-            margin-top: 20px;
-            cursor: pointer; /* Indichiamo che è cliccabile */
+            margin-top: 10px;
+            cursor: pointer;
         }
 
         #barcode {
             /* Lo stile del codice a barre sarà gestito dalla libreria */
+            width: 100%;
+            height: auto;
         }
 
         #programmazione-container {
-            margin-top: 20px;
+            margin-top: 10px;
             border: 1px solid white;
             padding: 10px;
             width: 80%;
+            border: 1px solid rgb(244, 240, 31);
         }
 
         #programmazione-container h2 {
             text-align: center;
+            color: white;
+            border: 1px solid rgb(244, 240, 31);
         }
 
         .programmazione-film {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
         }
 
-        /* Stili per la lista dei film */
+        /* Stili per la lista dei film (come nella grafica) */
         .movie-list-container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Griglia responsiva */
+            gap: 10px;
+            padding: 20px;
         }
 
         .movie-card {
-            width: 200px;
-            margin: 10px;
-            border: 1px solid #ccc;
-            box-shadow: 2px 2px 5px #888888;
+            border: 1px solid #ddd;
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+            text-align: center;
+            border-radius: 5px;
+            overflow: hidden;
+            background-color: #f8f8f8; /* Sfondo chiaro per le card */
+            color: #333; /* Testo scuro per le card */
         }
 
         .movie-card img {
             width: 100%;
             height: auto;
+            border-bottom: 1px solid #ddd;
         }
 
         .movie-card h3 {
-            font-size: 1.2em;
-            margin: 10px;
+            font-size: 1em;
+            padding: 10px;
+            margin: 0;
+            font-weight: bold;
         }
 
         .movie-card p {
-            margin: 0 10px 10px 10px;
+            font-size: 0.8em;
+            padding: 10px;
+            margin: 0;
         }
 
         .movie-card .btn {
@@ -93,38 +126,16 @@
             border-radius: 5px;
         }
 
-        /* Modale */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0, 0, 0, 0.9);
+        .ov-overlay {
+            /* Stile per l'overlay (se necessario) */
         }
 
-        .modal-content {
-            margin: auto;
-            display: block;
-            max-width: 80%;
-            max-height: 80%;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+        .block-filters {
+            /* Stili per i filtri (se presenti) */
         }
 
-        .close {
-            color: #fff;
-            position: absolute;
-            top: 10px;
-            right: 25px;
-            font-size: 35px;
-            font-weight: bold;
-            cursor: pointer;
+        .block-filters__filter {
+            /* Stili per i singoli filtri */
         }
     </style>
 
@@ -140,7 +151,7 @@
 
     <div id="input-container">
         <label for="data-input">Inserisci Codice promozionale:</label><br>
-        <input type="text" id="data-input" placeholder="Es. (01)95012345678908(17)241231">
+        <input type="text" id="data-input" placeholder="Es. 70E4580H25600481UCI">
         <button onclick="generateBarcode()">Genera Codice a Barre</button>
         <button onclick="resetBarcode()">Reset</button>
     </div>
@@ -150,7 +161,7 @@
     </div>
 
     <div id="programmazione-container">
-        <h2>Film Usciti Recentemente</h2>
+        <h2>Film in Programmazione</h2>
         <div class="movie-list-container">
             </div>
     </div>
@@ -167,13 +178,14 @@
         const TMDB_API_KEY = "8d598d7a5b6cc81fef53d86b5e2cc247"; // Inserisci qui la tua chiave API TMDB
 
         function generateBarcode() {
+            
             const dataInput = document.getElementById("data-input").value;
             const barcodeElement = document.getElementById("barcode");
             const barcodeContainer = document.getElementById("barcode-container");
             const barcodeModal = document.getElementById("barcode-modal");
             const barcodeModalImage = document.getElementById("barcode-modal-image");
 
-        
+           
 
             JsBarcode(barcodeElement, dataInput, {
                 format: "CODE128",
@@ -249,21 +261,25 @@
         function getRecentMovies() {
             const today = new Date();
             const twoWeeksAgo = new Date(today);
-            twoWeeksAgo.setDate(today.getDate() - 14);
+            twoWeeksAgo.setDate(today.getDate() - 30);
 
             const todayFormatted = today.toISOString().split('T')[0];
             const twoWeeksAgoFormatted = twoWeeksAgo.toISOString().split('T')[0];
 
-            const url = `https://api.themoviedb.org/3/discover/movie?api_key=${TMDB_API_KEY}&language=it-IT&sort_by=popularity.desc&include_adult=false&include_video=false&page=1&release_date.gte=${twoWeeksAgoFormatted}&release_date.lte=${todayFormatted}`;
+            // Modifica qui: Usa l'endpoint /search/movie e aggiungi with_type=movie
+            const url = `https://api.themoviedb.org/3/discover/movie?api_key=${TMDB_API_KEY}&language=it-IT&sort_by=popularity.desc&include_adult=false&include_video=false&page=1&release_date.gte=${twoWeeksAgoFormatted}&release_date.lte=${todayFormatted}&region=IT`;
 
             fetch(url)
                 .then(response => response.json())
                 .then(data => {
-                    movieListContainer.innerHTML = ""; // Pulisci il contenitore
+                    movieListContainer.innerHTML = "";
 
                     data.results.forEach(movie => {
-                        const movieCard = createMovieCard(movie);
-                        movieListContainer.appendChild(movieCard);
+                        // Verifica se il film ha una data di rilascio
+                        if (movie.release_date && movie.popularity > 10) { 
+                            const movieCard = createMovieCard(movie);
+                            movieListContainer.appendChild(movieCard);
+                        }
                     });
                 })
                 .catch(error => console.error("Errore nel recupero dei film:", error));
