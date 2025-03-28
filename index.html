@@ -71,17 +71,19 @@
         }
 
         #programmazione-container h2 {
+            font-family: sans-serif;
             text-align: center;
-            color: white;
+            font-size: 1,5em; /* Testo più piccolo */
+            color: rgb(5, 124, 160);
             border: 1px solid rgb(244, 240, 31);
-            background-color: rgb(0, 0, 128);
+           
         }
 
         .movie-list-container {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 10px;
-            padding: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Ridimensiona le card */
+            gap: 5px; /* Riduce lo spazio tra le card */
+            padding: 10px; /* Riduce il padding */
         }
 
         .movie-card {
@@ -101,15 +103,15 @@
         }
 
         .movie-card h3 {
-            font-size: 1em;
-            padding: 10px;
+            font-size: 0.9em; /* Testo più piccolo */
+            padding: 5px; /* Padding ridotto */
             margin: 0;
             font-weight: bold;
         }
 
         .movie-card p {
-            font-size: 0.8em;
-            padding: 10px;
+            font-size: 0.7em; /* Testo più piccolo */
+            padding: 5px; /* Padding ridotto */
             margin: 0;
         }
 
@@ -122,6 +124,9 @@
             text-decoration: none;
             text-align: center;
             border-radius: 5px;
+            font-size: 0.8em; /* Testo del pulsante più piccolo */
+            margin: 5px; /* Margine ridotto */
+            padding: 3px 6px; /* Padding ridotto */
         }
 
         .modal {
@@ -164,7 +169,8 @@
             }
 
             .movie-list-container {
-                grid-template-columns: 1fr; /* Una colonna su schermi piccoli */
+                grid-template-columns: repeat(2, 1fr); /* Due colonne su schermi piccoli */
+                gap: 10px; /* Aumenta leggermente il gap per una migliore spaziatura */
             }
         }
     </style>
